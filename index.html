@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>KSST Vishnu Sahasranama Allocation</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f3f3f3;
+text-align:center;
+}
+
+.container{
+width:850px;
+margin:auto;
+background:white;
+padding:25px;
+border-radius:12px;
+box-shadow:0 0 12px #ccc;
+}
+
+.logo{
+width:120px;
+margin-bottom:10px;
+}
+
+h2{
+color:#7a0f2e;
+}
+
+textarea{
+width:80%;
+height:120px;
+padding:10px;
+margin-top:10px;
+}
+
+button{
+padding:10px 18px;
+margin-top:10px;
+background:#7a0f2e;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+table{
+width:100%;
+margin-top:25px;
+border-collapse:collapse;
+}
+
+th,td{
+border:1px solid #ddd;
+padding:10px;
+}
+
+th{
+background:#7a0f2e;
+color:white;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<img src="ksstlogo.png" class="logo">
+
+<h2>🪷 Shri Vishnu Sahasranama Satsang Allocation 🪷</h2>
+
+<p>Paste devotee names (one per line)</p>
+
+<textarea id="names"></textarea>
+
+<br>
+
+<button onclick="generate()">Generate Allocation</button>
+
+<table id="table">
+
+<tr>
+<th>S.No</th>
+<th>Devotee</th>
+<th>Allocation</th>
+</tr>
+
+</table>
+
+</div>
+
+<script>
+
+function splitRange(total,count){
+
+let base=Math.floor(total/count)
+let extra=total%count
+let ranges=[]
+let start=1
+
+for(let i=0;i<count;i++){
+
+let size=base+(i<extra?1:0)
+let end=start+size-1
+
+ranges.push(start+"-"+end)
+
+start=end+1
+
+}
+
+return ranges
+
+}
+
+function generate(){
+
+let names=document.getElementById("names").value
+.split("\n")
+.filter(n=>n.trim()!="")
+
+let table=document.getElementById("table")
+
+table.innerHTML="<tr><th>S.No</th><th>Devotee</th><th>Allocation</th></tr>"
+
+let n=names.length
+
+let poorvangam=splitRange(22,n)
+let dhyanam=splitRange(8,n)
+let main=splitRange(108,n)
+let phala=splitRange(33,n)
+
+for(let i=0;i<n;i++){
+
+let row=table.insertRow()
+
+row.insertCell(0).innerHTML=i+1
+row.insertCell(1).innerHTML=names[i]
+
+row.insertCell(2).innerHTML=
+
+"Starting Prayer<br>"+
+"Mahalakshmi Ashtakam<br>"+
+"Poorvangam "+poorvangam[i]+"<br>"+
+"Nyasam<br>"+
+"Dhyanam "+dhyanam[i]+"<br>"+
+"Main Sloka "+main[i]+"<br>"+
+"Phalashruti "+phala[i]+"<br>"+
+"Ending Prayer"
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
