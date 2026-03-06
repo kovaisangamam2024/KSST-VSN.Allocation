@@ -2,65 +2,73 @@
 <html>
 <head>
 
-<title>KSST Vishnu Sahasranama Allocation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KSST Satsang Allocation Tool</title>
 
 <style>
 
 body{
 font-family:Arial;
-background:#f3f3f3;
-text-align:center;
+margin:0;
+background:#f2f2f2;
 }
 
-.container{
-width:850px;
-margin:auto;
-background:white;
-padding:25px;
-border-radius:12px;
-box-shadow:0 0 12px #ccc;
+header{
+background:#5fb84d;
+padding:15px;
+text-align:center;
+color:white;
 }
 
 .logo{
-width:120px;
-margin-bottom:10px;
+width:90px;
+display:block;
+margin:auto;
+margin-bottom:5px;
 }
 
-h2{
-color:#7a0f2e;
+.container{
+max-width:900px;
+margin:auto;
+background:white;
+padding:20px;
+}
+
+input, textarea{
+width:100%;
+padding:10px;
+margin-top:10px;
+border-radius:5px;
+border:1px solid #ccc;
+font-size:16px;
 }
 
 textarea{
-width:80%;
-height:120px;
-padding:10px;
-margin-top:10px;
+height:200px;
 }
 
 button{
-padding:10px 18px;
-margin-top:10px;
-background:#7a0f2e;
-color:white;
+padding:10px 14px;
+margin:6px;
+background:#4CAF50;
 border:none;
 border-radius:6px;
+color:white;
+font-size:15px;
 cursor:pointer;
 }
 
-table{
-width:100%;
-margin-top:25px;
-border-collapse:collapse;
+button:hover{
+background:#388E3C;
 }
 
-th,td{
-border:1px solid #ddd;
-padding:10px;
-}
-
-th{
-background:#7a0f2e;
-color:white;
+.output{
+margin-top:20px;
+background:#eee;
+padding:15px;
+border-radius:6px;
+white-space:pre-wrap;
+font-family:monospace;
 }
 
 </style>
@@ -69,49 +77,56 @@ color:white;
 
 <body>
 
-<div class="container">
+<header>
 
 <img src="ksstlogo.png" class="logo">
 
-<h2>🪷 Shri Vishnu Sahasranama Satsang Allocation 🪷</h2>
+<h2>KSST Satsang Allocation Tool</h2>
 
-<p>Paste devotee names (one per line)</p>
+</header>
 
-<textarea id="names"></textarea>
+<div class="container">
+
+<input id="batch" placeholder="Batch Number">
+
+<input id="date" placeholder="Satsang Date">
+
+<textarea id="names" placeholder="Enter Names (one per line)"></textarea>
 
 <br>
 
-<button onclick="generate()">Generate Allocation</button>
+<button onclick="allocate()">Allocate</button>
+<button onclick="randomize()">Randomize Names</button>
+<button onclick="copyAlloc()">Copy Allocation</button>
+<button onclick="downloadExcel()">Download Excel</button>
+<button onclick="shareWhatsApp()">Share WhatsApp</button>
 
-<table id="table">
-
-<tr>
-<th>S.No</th>
-<th>Devotee</th>
-<th>Allocation</th>
-</tr>
-
-</table>
+<div id="result" class="output"></div>
 
 </div>
 
 <script>
 
-function splitRange(total,count){
+let finalText=""
 
+function splitRange(start,end,count){
+
+let total=end-start+1
 let base=Math.floor(total/count)
 let extra=total%count
 let ranges=[]
-let start=1
+let current=start
 
 for(let i=0;i<count;i++){
 
 let size=base+(i<extra?1:0)
-let end=start+size-1
 
-ranges.push(start+"-"+end)
+let s=current
+let e=current+size-1
 
-start=end+1
+ranges.push(s+"-"+e)
+
+current=e+1
 
 }
 
@@ -119,43 +134,121 @@ return ranges
 
 }
 
-function generate(){
+function allocate(){
 
-let names=document.getElementById("names").value
-.split("\n")
-.filter(n=>n.trim()!="")
+let names=document.getElementById("names").value.trim().split("\n")
+let batch=document.getElementById("batch").value
+let date=document.getElementById("date").value
 
-let table=document.getElementById("table")
+let text=""
 
-table.innerHTML="<tr><th>S.No</th><th>Devotee</th><th>Allocation</th></tr>"
+text+="Batch : "+batch+"\n"
+text+="Date : "+date+"\n\n"
 
-let n=names.length
+text+="Starting Prayer : Mahalakshmi Ashtakam\n\n"
 
-let poorvangam=splitRange(22,n)
-let dhyanam=splitRange(8,n)
-let main=splitRange(108,n)
-let phala=splitRange(33,n)
+let index=0
 
-for(let i=0;i<n;i++){
+let poorv=splitRange(1,22,names.length)
 
-let row=table.insertRow()
+for(let i=0;i<names.length;i++){
 
-row.insertCell(0).innerHTML=i+1
-row.insertCell(1).innerHTML=names[i]
-
-row.insertCell(2).innerHTML=
-"Poorvangam "+poorvangam[i]+"<br>"+
-"Nyasam<br>"+
-"Dhyanam "+dhyanam[i]+"<br>"+
-"Main Sloka "+main[i]+"<br>"+
-"Phalashruti "+phala[i]+"<br>"+
-"Ending Prayer"
+text+="Poorvanga "+poorv[i]+" ---- "+names[i]+"\n"
 
 }
+
+text+="\nNyasa ---- "+names[index%names.length]+"\n"
+index++
+
+text+="\nDhyanam 1-3 ---- "+names[index%names.length]+"\n"
+index++
+
+text+="Dhyanam 4-8 ---- "+names[index%names.length]+"\n\n"
+index++
+
+let start=1
+
+while(start<=108){
+
+let end=start+9
+
+if(end>108) end=108
+
+text+="Sloka "+start+"-"+end+" ---- "+names[index%names.length]+"\n"
+
+start=end+1
+
+index++
+
+}
+
+text+="\n"
+
+let phala=splitRange(1,33,names.length)
+
+for(let i=0;i<names.length;i++){
+
+text+="Phalashruti "+phala[i]+" ---- "+names[i]+"\n"
+
+}
+
+text+="\nEnding Prayer\n"
+
+document.getElementById("result").innerText=text
+
+finalText=text
+
+}
+
+function randomize(){
+
+let names=document.getElementById("names").value.trim().split("\n")
+
+for(let i=names.length-1;i>0;i--){
+
+let j=Math.floor(Math.random()*(i+1))
+
+let temp=names[i]
+names[i]=names[j]
+names[j]=temp
+
+}
+
+document.getElementById("names").value=names.join("\n")
+
+}
+
+function copyAlloc(){
+
+navigator.clipboard.writeText(finalText)
+
+alert("Allocation copied")
+
+}
+
+function downloadExcel(){
+
+let blob=new Blob([finalText],{type:"text/csv"})
+let a=document.createElement("a")
+
+a.href=URL.createObjectURL(blob)
+
+a.download="KSST_Allocation.csv"
+
+a.click()
+
+}
+
+function shareWhatsApp(){
+
+let url="https://wa.me/?text="+encodeURIComponent(finalText)
+
+window.open(url)
 
 }
 
 </script>
 
 </body>
+
 </html>
