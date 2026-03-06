@@ -122,7 +122,8 @@ return
 
 let output=""
 
-output+="Starting Prayer : Mahalakshmi Ashtakam\n\n"
+output+="Starting Prayer\n"
+output+="Mahalaksnmi Astakam\n\n"
 
 let index=0
 
@@ -206,14 +207,36 @@ alert("Allocation copied")
 
 function downloadCSV(){
 
-let csv=allocationText.replace(/\n/g,"\n")
+function downloadExcel(){
+
+let lines = allocationText.split("\n")
+
+let csv="Section,Sloka Range,Name\n"
+
+lines.forEach(line=>{
+
+if(line.includes("----")){
+
+let parts=line.split("----")
+
+let left=parts[0].trim()
+let name=parts[1].trim()
+
+let words=left.split(" ")
+
+let section=words[0]
+let range=words.slice(1).join(" ")
+
+csv+=section+","+range+","+name+"\n"
+
+}
+
+})
 
 let blob=new Blob([csv],{type:"text/csv"})
-
 let a=document.createElement("a")
 
 a.href=URL.createObjectURL(blob)
-
 a.download="KSST_Allocation.csv"
 
 a.click()
