@@ -1,0 +1,1 @@
+# KSST-VSN.allocation
